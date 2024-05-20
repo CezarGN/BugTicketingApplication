@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Paper, Checkbox, ListItemText, Alert } from '@mui/material';
+import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Paper, Checkbox, ListItemText, Snackbar, Alert } from '@mui/material';
 import './addproject.css';
 import AdminService from '../../../services/adminservice';
 
@@ -10,8 +10,8 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
   const [developers, setDevelopers] = useState([]);
   const [selectedDevelopers, setSelectedDevelopers] = useState([]);
   const [isFormValid, setIsFormValid] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     fetchDevelopers();
@@ -65,22 +65,21 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
 
   const handleSaveProject = async () => {
     try {
-      if(initialProjectData == null){
-      await adminService.createProject(name, description, selectedDevelopers);
-      onSave({ name, description, developers: selectedDevelopers });
-      setSuccess('Project created successfully');
-      setTimeout(() => setSuccess(null), 5000);
-      }else
-      {
-      await adminService.updateProject(initialProjectData.id, name, description, selectedDevelopers);
-      onSave({ name, description, developers: selectedDevelopers });
-      setSuccess('Project updated successfully');
-      setTimeout(() => setSuccess(null), 5000);
+      if (initialProjectData == null) {
+        await adminService.createProject(name, description, selectedDevelopers);
+        onSave({ name, description, developers: selectedDevelopers });
+        setSuccessMessage('Project created successfully');
+      } else {
+        await adminService.updateProject(initialProjectData.id, name, description, selectedDevelopers);
+        onSave({ name, description, developers: selectedDevelopers });
+        setSuccessMessage('Project updated successfully');
       }
+      setName('');
+      setDescription('');
+      setSelectedDevelopers([]);
     } catch (error) {
-      setError('Failed to update project');
-      setTimeout(() => setError(null), 5000);
-      console.error('Failed to update project:', error);
+      setErrorMessage('Failed to save project');
+      console.error('Failed to save project:', error.message);
     }
   };
 
@@ -88,9 +87,14 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
     onClose();
   };
 
+  const handleAlertClose = () => {
+    setSuccessMessage('');
+    setErrorMessage('');
+  };
+
   return (
     <Paper className="add-project-form-container">
-      <h2 className="add-project-form-title">Edit Project</h2>
+      <h2 className="add-project-form-title">{initialProjectData ? 'Edit Project' : 'Add Project'}</h2>
       <TextField
         label="Name"
         value={name}
@@ -104,6 +108,8 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
         onChange={handleDescriptionChange}
         required
         className="add-project-form-field"
+        multiline
+        rows={4}
       />
       <FormControl className="add-project-form-field">
         <InputLabel>Developers</InputLabel>
@@ -117,7 +123,7 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
             <div className="selected-developers">
               {selected.map((developerId) => {
                 const developer = developers.find((dev) => dev.id === developerId);
-                if (!developer || !developer.appUser) return null; // Added check
+                if (!developer || !developer.appUser) return null;
                 return (
                   <div key={developer.id} className="developer-chip">
                     {developer.appUser.username}
@@ -146,8 +152,22 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
           Save
         </Button>
       </div>
-      {success && <Alert className='custom-alert' variant="filled" severity="success">{success}</Alert>}
-      {error && <Alert className='custom-alert' variant="filled" severity="error">{error}</Alert>}
+      <div className="alert-container">
+        {successMessage && (
+          <Snackbar open={true} autoHideDuration={4000} onClose={handleAlertClose}>
+            <Alert onClose={handleAlertClose} severity="success">
+              {successMessage}
+            </Alert>
+          </Snackbar>
+        )}
+        {errorMessage && (
+          <Snackbar open={true} autoHideDuration={4000} onClose={handleAlertClose}>
+            <Alert onClose={handleAlertClose} severity="error">
+              {errorMessage}
+            </Alert>
+          </Snackbar>
+        )}
+      </div>
     </Paper>
   );
 }

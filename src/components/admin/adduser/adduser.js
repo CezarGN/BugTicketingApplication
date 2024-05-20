@@ -3,7 +3,7 @@ import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Paper, Sn
 import './adduser.css';
 import AdminService from '../../../services/adminservice';
 
-function AddUserForm({ onSave, onClose }) {
+function AddUserForm({ onSave, onClose, initialUserData }) {
   const adminService = new AdminService();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -12,6 +12,14 @@ function AddUserForm({ onSave, onClose }) {
   const [isFormValid, setIsFormValid] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (initialUserData) {
+      setUsername(initialUserData.appUser.username);
+      setSeniority(initialUserData.seniority);
+      setRole(initialUserData.appUser.role);
+    }
+  }, [initialUserData]);
 
   useEffect(() => {
     checkFormValidity();
@@ -34,22 +42,28 @@ function AddUserForm({ onSave, onClose }) {
   };
 
   const checkFormValidity = () => {
-    const isValid = username.trim() !== '' && password.trim() !== '' && seniority.trim() !== '' && role.trim() !== '';
+    const isValid = username.trim() !== '' && (initialUserData || password.trim() !== '') && seniority.trim() !== '' && role.trim() !== '';
     setIsFormValid(isValid);
   };
 
   const handleSaveUser = async () => {
     try {
-      await adminService.addUser(username, password, seniority, role);
-      onSave({ username, password, seniority, role });
+      if (initialUserData) {
+        await adminService.updateUser(initialUserData.id, username, seniority, role);
+        onSave({ id: initialUserData.id, username, seniority, role });
+        setSuccessMessage('User updated successfully');
+      } else {
+        await adminService.addUser(username, password, seniority, role);
+        onSave({ username, password, seniority, role });
+        setSuccessMessage('User created successfully');
+      }
       setUsername('');
       setPassword('');
       setSeniority('');
       setRole('');
-      setSuccessMessage('User created successfully');
     } catch (error) {
-      setErrorMessage('Username already exists');
-      console.error('User creation failed: ', error.message);
+      setErrorMessage('Failed to save user');
+      console.error('User save failed: ', error.message);
     }
   };
 
@@ -64,7 +78,7 @@ function AddUserForm({ onSave, onClose }) {
 
   return (
     <Paper className="add-user-form-container">
-      <h2 className="add-user-form-title">Add User</h2>
+      <h2 className="add-user-form-title">{initialUserData ? 'Edit User' : 'Add User'}</h2>
       <TextField
         label="Username"
         value={username}
@@ -72,14 +86,16 @@ function AddUserForm({ onSave, onClose }) {
         required
         className="add-user-form-field"
       />
-      <TextField
-        label="Password"
-        type="password"
-        value={password}
-        onChange={handlePasswordChange}
-        required
-        className="add-user-form-field"
-      />
+      {!initialUserData && (
+        <TextField
+          label="Password"
+          type="password"
+          value={password}
+          onChange={handlePasswordChange}
+          required
+          className="add-user-form-field"
+        />
+      )}
       <FormControl className="add-user-form-field">
         <InputLabel>Seniority</InputLabel>
         <Select
