@@ -1,0 +1,56 @@
+.login-container {
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+  .login-form {
+    display: inline-block;
+    border: 1px solid #ddd;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .login-input {
+    margin-bottom: 20px;
+  }
+  
+  .login-label {
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+  }
+  
+  .login-input input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .login-button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .login-button:hover {
+    background-color: #0056b3;
+  }
+
+  .custom-alert {
+    position: absolute;
+    bottom: 450px; /* Position alert just below the login form */
+    left: 50%;
+    transform: translateX(-50%); /* Center alert horizontally */
+    width: 80%; /* Make alert 80% wide */
+    max-width: 270px; /* Limit the maximum width of the alert */
+}

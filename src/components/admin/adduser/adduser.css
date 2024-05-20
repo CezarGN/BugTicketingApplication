@@ -1,0 +1,42 @@
+/* adduser.css */
+
+.add-user-form-container {
+    width: 400px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 10vh auto;
+  }
+  
+  .add-user-form-title {
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+  
+  .add-user-form-field {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  .add-user-form-select {
+    width: 100%;
+  }
+  
+  .add-user-form-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .add-user-form-buttons button {
+    width: 48%;
+  }
+  
+  .alert-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
