@@ -66,12 +66,14 @@ class AdminService {
     )
     }
 
-    updateUser(userId, username, seniority, role){
+  updateUser(userId, username, seniority, role){
       const token = localStorage.getItem('access_token')
       const requestBody = {
-          username : username,
+          appUser : {
+            username : username,
+            role : role
+          },
           seniority : seniority,
-          role : role
       }
       const requestOptions = {
           method: 'PUT',

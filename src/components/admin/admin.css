@@ -14,7 +14,7 @@
   margin-top: 20px;
 }
 
-.admin-delete-icon {
+.admin-delete-icon:hover {
   color: red;
 }
 

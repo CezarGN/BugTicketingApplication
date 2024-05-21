@@ -15,9 +15,9 @@ function AddUserForm({ onSave, onClose, initialUserData }) {
 
   useEffect(() => {
     if (initialUserData) {
-      setUsername(initialUserData.appUser.username);
-      setSeniority(initialUserData.seniority);
-      setRole(initialUserData.appUser.role);
+      setUsername(initialUserData.appUser?.username || '');
+      setSeniority(initialUserData.seniority || '');
+      setRole(initialUserData.appUser?.role || '');
     }
   }, [initialUserData]);
 
@@ -42,7 +42,7 @@ function AddUserForm({ onSave, onClose, initialUserData }) {
   };
 
   const checkFormValidity = () => {
-    const isValid = username.trim() !== '' && (initialUserData || password.trim() !== '') && seniority.trim() !== '' && role.trim() !== '';
+    const isValid = username.trim() !== '' && (initialUserData || password.trim() !== '') && seniority !== '' && role !== '';
     setIsFormValid(isValid);
   };
 

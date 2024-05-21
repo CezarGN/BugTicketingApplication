@@ -186,7 +186,7 @@ function Admin() {
             <TableBody>
               {developers.map(developer => (
                 <TableRow key={developer.id}>
-                  <TableCell>{developer.appUser.username}</TableCell>
+                  <TableCell>{developer.appUser?.username}</TableCell>
                   <TableCell>{developer.seniority}</TableCell>
                   <TableCell>
                     <IconButton aria-label="edit" onClick={() => handleEditUser(developer.id)}>
