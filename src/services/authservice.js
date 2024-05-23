@@ -27,7 +27,8 @@ login(username, password) {
         data => {
             const cookieBody ={
               token : data.token,
-              role : data.role
+              role : data.role,
+              id : data.id
             }
             localStorage.setItem("access_token", data.token)
             return data;

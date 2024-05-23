@@ -1,0 +1,53 @@
+.project-container {
+    padding: 20px;
+}
+
+.project-header {
+    margin-bottom: 20px;
+}
+
+.project-description {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.bug-list {
+    margin-bottom: 20px;
+}
+
+.bug-list-item {
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.bug-list-item:hover {
+    background-color: #f5f5f5;
+    cursor: pointer;
+}
+
+.bug-status {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.bug-status.open {
+    color: red;
+}
+
+.bug-status.in-progress {
+    color: yellow;
+}
+
+.bug-status.closed {
+    color: green;
+}
+
+.bug-developer {
+    font-size: 1.2rem;
+    font-style: italic;
+    margin-left: 10px;
+}
+
+.chart-container {
+    margin-top: 30px;
+}
