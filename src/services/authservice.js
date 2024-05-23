@@ -25,12 +25,10 @@ login(username, password) {
       })
       .then(
         data => {
-            const cookieBody ={
-              token : data.token,
-              role : data.role,
-              id : data.id
-            }
+            console.log(data.id);
             localStorage.setItem("access_token", data.token)
+            localStorage.setItem("developer_id", data.id)
+            localStorage.setItem("user_role", data.role)
             return data;
         }
       )

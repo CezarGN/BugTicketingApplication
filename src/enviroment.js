@@ -13,6 +13,7 @@ const getIdleDevelopersUrl = adminUrl + "/get_idle_developers"
 const updateDeveloperUrl = adminUrl + "/update_developer"
 const deleteDeveloperUrl = adminUrl + "/delete_developer"
 const getDeveloperProjectUrl = developerUrl + "/get_developer_project"
+const addBugUrl = developerUrl + "/add_bug"
 
 const enviroment = {
     apiUrl: apiUrl,
@@ -27,7 +28,8 @@ const enviroment = {
     getIdleDevelopersUrl : getIdleDevelopersUrl,
     updateDeveloperUrl : updateDeveloperUrl,
     deleteDeveloperUrl : deleteDeveloperUrl,
-    getDeveloperProjectUrl : getDeveloperProjectUrl
+    getDeveloperProjectUrl : getDeveloperProjectUrl,
+    addBugUrl : addBugUrl
 }
 
 export default enviroment

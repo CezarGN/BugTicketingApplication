@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import DeveloperService from '../../services/developerservice';
-import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './projecthomepage.css'
 
@@ -14,6 +13,9 @@ function ProjectHomePage() {
     const [open, setOpen] = useState(false);
     const [bugName, setBugName] = useState('');
     const [bugDescription, setBugDescription] = useState('');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState('success');
     const developerService = new DeveloperService();
 
     useEffect(() => {
@@ -41,27 +43,30 @@ function ProjectHomePage() {
         setOpen(false);
     };
 
+    const handleAlertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAlertOpen(false);
+    };
+
     const handleSaveBug = () => {
-        const accessToken =localStorage.get('access_token');
-        const developerId = accessToken.id;
-
-        const newBug = {
-            name: bugName,
-            description: bugDescription,
-            developer: { id: developerId },
-            status: 'OPEN'
-        };
-
-        developerService.addBugToProject(newBug, projectId)
-            .then(() => {
+        const projectId = project.id
+        developerService.addBug(projectId, bugName, bugDescription)
+            .then((newBug) => {
                 setBugs([...bugs, newBug]);
                 setOpen(false);
+                setAlertMessage('Bug added successfully!');
+                setAlertSeverity('success');
+                setAlertOpen(true);
             })
             .catch(error => {
                 console.error('Failed to add bug:', error);
+                setAlertMessage('Failed to add bug!');
+                setAlertSeverity('error');
+                setAlertOpen(true);
             });
     };
-
 
     if (loading) {
         return <CircularProgress />;
@@ -143,6 +148,21 @@ function ProjectHomePage() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Snackbar
+                open={alertOpen}
+                autoHideDuration={4000}
+                onClose={handleAlertClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={handleAlertClose}
+                    severity={alertSeverity}
+                    className={`snackbar-${alertSeverity}`}
+                    sx={{ width: '100%' }}
+                >
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
             <Typography variant="h6" gutterBottom>
                 Bug Status Distribution
             </Typography>
