@@ -70,15 +70,42 @@ class DeveloperService {
 
   getBugById(bugId){
     const requestOptions = {
-      method: 'POST',
+      method: 'GET',
       headers: { 'Content-Type': 'application/json' ,
       'Authorization': `Bearer ${this.token}`
     }
     }
-    return fetch(`${enviroment.getBugByIdUrlUrl}/${bugId}`, requestOptions)
+    return fetch(`${enviroment.getBugByIdUrl}/${bugId}`, requestOptions)
     .then(response => {
       if(!response.ok){
           throw new Error('Bug could not be found in the database')
+      }
+      return response.json();
+    })
+    .then  (
+      data => {
+      return data;
+  }
+)
+.catch(error =>
+  {
+      console.error("There was a problem with the fetch operation", error);
+      throw error;
+  }
+  )
+  }
+
+  getDevelopersOnProject(projectId){
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' ,
+      'Authorization': `Bearer ${this.token}`
+    }
+    }
+    return fetch(`${enviroment.getDevelopersOnProjectUrl}/${projectId}`, requestOptions)
+    .then(response => {
+      if(!response.ok){
+          throw new Error('Developers could not be found in the database')
       }
       return response.json();
     })

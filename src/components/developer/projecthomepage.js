@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import DeveloperService from '../../services/developerservice';
 import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import './projecthomepage.css'
+import './projecthomepage.css';
 
 function ProjectHomePage() {
     const { userId } = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
     const [project, setProject] = useState(null);
     const [bugs, setBugs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ function ProjectHomePage() {
     useEffect(() => {
         developerService.getDeveloperProject(userId)
             .then(data => {
-                setProject(data); 
+                setProject(data);
                 setBugs(data.bugs);
                 setLoading(false);
             })
@@ -33,7 +33,7 @@ function ProjectHomePage() {
     }, [userId]);
 
     const handleBugClick = (bug) => {
-        history.push(`/bugs/${bug.id}`);
+        navigate(`/bugs/${bug.id}/${project.id}`);
     };
 
     const handleAddBugClick = () => {
@@ -52,7 +52,7 @@ function ProjectHomePage() {
     };
 
     const handleSaveBug = () => {
-        const projectId = project.id
+        const projectId = project.id;
         developerService.addBug(projectId, bugName, bugDescription)
             .then((newBug) => {
                 setBugs([...bugs, newBug]);
@@ -96,8 +96,8 @@ function ProjectHomePage() {
                             onClick={() => handleBugClick(bug)}
                             className={`bug-list-item ${bug.status.toLowerCase().replace(' ', '-')}`}
                         >
-                            <ListItemText 
-                                primary={bug.name} 
+                            <ListItemText
+                                primary={bug.name}
                                 secondary={
                                     <>
                                         <span className={`bug-status ${bug.status.toLowerCase().replace(' ', '-')}`}>
@@ -107,7 +107,7 @@ function ProjectHomePage() {
                                             {bug.developer?.appUser?.username}
                                         </span>
                                     </>
-                                } 
+                                }
                             />
                         </ListItem>
                     ))}

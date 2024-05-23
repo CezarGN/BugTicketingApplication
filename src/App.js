@@ -16,7 +16,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/project_home_page/:userId" element={<ProjectHomePage />} />
-        <Route path="/bugs/:bugId" element={<BugDetailsPage />} />
+        <Route path="/bugs/:bugId/:projectId" element={<BugDetailsPage />} />
       </Routes>
     </Router>
   );

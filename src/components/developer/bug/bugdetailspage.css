@@ -6,6 +6,9 @@
 .bug-details-paper {
     padding: 20px;
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .bug-status.open {
@@ -18,4 +21,9 @@
 
 .bug-status.closed {
     color: green;
+}
+
+.back-button {
+    align-self: flex-start;
+    margin-top: 20px;
 }
