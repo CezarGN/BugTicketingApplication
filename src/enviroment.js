@@ -14,6 +14,7 @@ const updateDeveloperUrl = adminUrl + "/update_developer"
 const deleteDeveloperUrl = adminUrl + "/delete_developer"
 const getDeveloperProjectUrl = developerUrl + "/get_developer_project"
 const addBugUrl = developerUrl + "/add_bug"
+const getBugByIdUrl = developerUrl + "/get_bug"
 
 const enviroment = {
     apiUrl: apiUrl,
@@ -29,7 +30,8 @@ const enviroment = {
     updateDeveloperUrl : updateDeveloperUrl,
     deleteDeveloperUrl : deleteDeveloperUrl,
     getDeveloperProjectUrl : getDeveloperProjectUrl,
-    addBugUrl : addBugUrl
+    addBugUrl : addBugUrl,
+    getBugByIdUrl : getBugByIdUrl
 }
 
 export default enviroment

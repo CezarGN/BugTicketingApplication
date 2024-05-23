@@ -36,7 +36,7 @@ class DeveloperService {
       const requestBody = {
         name: bugName,
         description: bugDescription,
-        developer: { id: this.developer_id},
+        developer: this.developer_id,
         status: 'OPEN'
       };
       console.log(JSON.stringify(requestBody))
@@ -48,7 +48,7 @@ class DeveloperService {
       },
       body : JSON.stringify(requestBody)
       }
-      return fetch(`${enviroment.getDeveloperProjectUrl}/${projectId}`, requestOptions)
+      return fetch(`${enviroment.addBugUrl}/${projectId}`, requestOptions)
       .then(response => {
         if(!response.ok){
             throw new Error('Bug could not be added to the database')
@@ -65,8 +65,34 @@ class DeveloperService {
         console.error("There was a problem with the fetch operation", error);
         throw error;
     }
-)
+    )
+  }
 
+  getBugById(bugId){
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' ,
+      'Authorization': `Bearer ${this.token}`
     }
+    }
+    return fetch(`${enviroment.getBugByIdUrlUrl}/${bugId}`, requestOptions)
+    .then(response => {
+      if(!response.ok){
+          throw new Error('Bug could not be found in the database')
+      }
+      return response.json();
+    })
+    .then  (
+      data => {
+      return data;
+  }
+)
+.catch(error =>
+  {
+      console.error("There was a problem with the fetch operation", error);
+      throw error;
+  }
+  )
+  }
 } 
 export default DeveloperService

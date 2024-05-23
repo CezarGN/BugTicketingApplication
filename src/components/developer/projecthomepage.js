@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import DeveloperService from '../../services/developerservice';
 import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -7,6 +7,7 @@ import './projecthomepage.css'
 
 function ProjectHomePage() {
     const { userId } = useParams();
+    const history = useHistory();
     const [project, setProject] = useState(null);
     const [bugs, setBugs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -32,7 +33,7 @@ function ProjectHomePage() {
     }, [userId]);
 
     const handleBugClick = (bug) => {
-        // Handle bug click
+        history.push(`/bugs/${bug.id}`);
     };
 
     const handleAddBugClick = () => {
