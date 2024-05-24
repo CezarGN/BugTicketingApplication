@@ -68,7 +68,7 @@ function BugDetailsPage() {
                 setAlertOpen(true);
                 setTimeout(() => {
                     navigate(`/project_home_page/${bug.developer.appUser.id}`);
-                }, 2000); // Adjust the timeout as needed
+                }, 2000);
             })
             .catch(error => {
                 console.error('Failed to update bug:', error);

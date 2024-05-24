@@ -4,7 +4,7 @@ import Alert from '@mui/material/Alert';
 import './login.css';
 import AuthService from '../../services/authservice';
 
-function Login() {
+function Login({ onLogin }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -16,6 +16,7 @@ function Login() {
         event.preventDefault();
         try {
             const data = await authService.login(username, password);
+            onLogin();
             if (data.role === 'ADMIN') {
                 navigate("/admin");
             } else {
