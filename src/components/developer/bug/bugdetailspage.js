@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DeveloperService from '../../../services/developerservice';
-import { CircularProgress, Container, Typography, Paper, Button, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import { CircularProgress, Container, Typography, Paper, Button, MenuItem, Select, FormControl, InputLabel, TextField, Snackbar, Alert } from '@mui/material';
 import './bugdetailspage.css';
 
 function BugDetailsPage() {
@@ -10,7 +10,12 @@ function BugDetailsPage() {
     const [bug, setBug] = useState(null);
     const [developers, setDevelopers] = useState([]);
     const [selectedDeveloper, setSelectedDeveloper] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState('');
+    const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(true);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState('success');
     const developerService = new DeveloperService();
 
     useEffect(() => {
@@ -18,6 +23,8 @@ function BugDetailsPage() {
             .then(data => {
                 setBug(data);
                 setSelectedDeveloper(data.developer.id);
+                setSelectedStatus(data.status);
+                setDescription(data.description);
                 setLoading(false);
             })
             .catch(error => {
@@ -36,14 +43,46 @@ function BugDetailsPage() {
 
     const handleDeveloperChange = (event) => {
         setSelectedDeveloper(event.target.value);
-        // You would need to implement the method to update the developer of the bug
-        // developerService.updateBugDeveloper(bugId, event.target.value)
-        //     .then(() => {
-        //         // Successfully updated developer
-        //     })
-        //     .catch(error => {
-        //         console.error('Failed to update developer:', error);
-        //     });
+    };
+
+    const handleStatusChange = (event) => {
+        setSelectedStatus(event.target.value);
+    };
+
+    const handleDescriptionChange = (event) => {
+        setDescription(event.target.value);
+    };
+
+    const handleSaveChanges = () => {
+        const updatedBug = {
+            ...bug,
+            developer: selectedDeveloper,
+            status: selectedStatus,
+            description: description,
+        };
+        
+        developerService.updateBug(bugId, updatedBug)
+            .then(() => {
+                setAlertMessage('Bug updated successfully!');
+                setAlertSeverity('success');
+                setAlertOpen(true);
+                setTimeout(() => {
+                    navigate(`/project_home_page/${bug.developer.appUser.id}`);
+                }, 2000); // Adjust the timeout as needed
+            })
+            .catch(error => {
+                console.error('Failed to update bug:', error);
+                setAlertMessage('Failed to update bug!');
+                setAlertSeverity('error');
+                setAlertOpen(true);
+            });
+    };
+
+    const handleAlertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAlertOpen(false);
     };
 
     const handleBackToProject = () => {
@@ -60,13 +99,32 @@ function BugDetailsPage() {
                 {bug.name}
             </Typography>
             <Paper elevation={3} className="bug-details-paper">
-                <Typography variant="body1" gutterBottom>
-                    <strong>Description:</strong> {bug.description}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                    <strong>Status:</strong> <span className={`bug-status ${bug.status.toLowerCase()}`}>{bug.status}</span>
-                </Typography>
                 <FormControl fullWidth>
+                    <TextField
+                        label="Description"
+                        value={description}
+                        onChange={handleDescriptionChange}
+                        multiline
+                        rows={4}
+                        variant="outlined"
+                        margin="normal"
+                    />
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                    <InputLabel id="status-select-label">Status</InputLabel>
+                    <Select
+                        labelId="status-select-label"
+                        id="status-select"
+                        value={selectedStatus}
+                        label="Status"
+                        onChange={handleStatusChange}
+                    >
+                        <MenuItem value="OPEN">Open</MenuItem>
+                        <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+                        <MenuItem value="CLOSED">Closed</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl fullWidth margin="normal">
                     <InputLabel id="developer-select-label">Developer</InputLabel>
                     <Select
                         labelId="developer-select-label"
@@ -82,10 +140,28 @@ function BugDetailsPage() {
                         ))}
                     </Select>
                 </FormControl>
-                <Button variant="contained" color="primary" className="back-button" onClick={handleBackToProject}>
+                <Button variant="contained" color="primary" onClick={handleSaveChanges}>
+                    Save Changes
+                </Button>
+                <Button variant="contained" color="secondary" className="back-button" onClick={handleBackToProject}>
                     Back to Project
                 </Button>
             </Paper>
+            <Snackbar
+                open={alertOpen}
+                autoHideDuration={4000}
+                onClose={handleAlertClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={handleAlertClose}
+                    severity={alertSeverity}
+                    className={`snackbar-${alertSeverity}`}
+                    sx={{ width: '100%' }}
+                >
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 }
