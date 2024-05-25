@@ -4,6 +4,7 @@ import enviroment from "../enviroment";
 class DeveloperService {
   token = localStorage.getItem('access_token')
   developer_id = localStorage.getItem('developer_id')
+  
   getDeveloperProject(userId) {
     const requestOptions = {
       method: 'GET',

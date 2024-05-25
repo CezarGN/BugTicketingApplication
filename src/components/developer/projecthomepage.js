@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DeveloperService from '../../services/developerservice';
-import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './projecthomepage.css';
 
@@ -17,6 +17,8 @@ function ProjectHomePage() {
     const [alertOpen, setAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('success');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [nameFilter, setNameFilter] = useState('');
     const developerService = new DeveloperService();
 
     useEffect(() => {
@@ -73,6 +75,11 @@ function ProjectHomePage() {
         return <CircularProgress />;
     }
 
+    const filteredBugs = bugs.filter(bug => {
+        return (statusFilter === '' || bug.status === statusFilter) &&
+               (nameFilter === '' || bug.name.toLowerCase().includes(nameFilter.toLowerCase()));
+    });
+
     const bugStatusData = [
         { status: 'OPEN', count: bugs.filter(bug => bug.status === 'OPEN').length },
         { status: 'IN PROGRESS', count: bugs.filter(bug => bug.status === 'IN_PROGRESS').length },
@@ -87,9 +94,30 @@ function ProjectHomePage() {
             <Typography variant="body1" gutterBottom className="project-description">
                 {project.description}
             </Typography>
+            <FormControl fullWidth margin="normal">
+                <InputLabel>Status Filter</InputLabel>
+                <Select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    label="Status Filter"
+                >
+                    <MenuItem value="">All</MenuItem>
+                    <MenuItem value="OPEN">Open</MenuItem>
+                    <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+                    <MenuItem value="CLOSED">Closed</MenuItem>
+                </Select>
+            </FormControl>
+            <TextField
+                label="Name Filter"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+            />
             <Paper elevation={3} style={{ marginBottom: '20px' }} className="bug-list">
                 <List>
-                    {bugs.map(bug => (
+                    {filteredBugs.map(bug => (
                         <ListItem
                             button
                             key={bug.id}
