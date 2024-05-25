@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DeveloperService from '../../services/developerservice';
-import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, MenuItem, Select, FormControl, InputLabel, Tabs, Tab, Box } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './projecthomepage.css';
 
@@ -19,13 +19,14 @@ function ProjectHomePage() {
     const [alertSeverity, setAlertSeverity] = useState('success');
     const [statusFilter, setStatusFilter] = useState('');
     const [nameFilter, setNameFilter] = useState('');
+    const [tabIndex, setTabIndex] = useState(0);
     const developerService = new DeveloperService();
 
     useEffect(() => {
         developerService.getDeveloperProject(userId)
             .then(data => {
                 setProject(data);
-                setBugs(data.bugs);
+                fetchBugs(data.id);
                 setLoading(false);
             })
             .catch(error => {
@@ -33,6 +34,32 @@ function ProjectHomePage() {
                 setLoading(false);
             });
     }, [userId]);
+
+    const fetchBugs = (projectId) => {
+        if (tabIndex === 1) {
+            developerService.getBugs(userId, projectId)
+                .then(data => {
+                    setBugs(data);
+                })
+                .catch(error => {
+                    console.error('Failed to fetch assigned bugs:', error);
+                });
+        } else {
+            developerService.getBugs(0, projectId)
+                .then(data => {
+                    setBugs(data);
+                })
+                .catch(error => {
+                    console.error('Failed to fetch all project bugs:', error);
+                });
+        }
+    };
+
+    useEffect(() => {
+        if (project) {
+            fetchBugs(project.id);
+        }
+    }, [tabIndex, project]);
 
     const handleBugClick = (bug) => {
         navigate(`/bugs/${bug.id}/${project.id}`);
@@ -71,6 +98,10 @@ function ProjectHomePage() {
             });
     };
 
+    const handleTabChange = (event, newValue) => {
+        setTabIndex(newValue);
+    };
+
     if (loading) {
         return <CircularProgress />;
     }
@@ -94,53 +125,108 @@ function ProjectHomePage() {
             <Typography variant="body1" gutterBottom className="project-description">
                 {project.description}
             </Typography>
-            <FormControl fullWidth margin="normal">
-                <InputLabel>Status Filter</InputLabel>
-                <Select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    label="Status Filter"
-                >
-                    <MenuItem value="">All</MenuItem>
-                    <MenuItem value="OPEN">Open</MenuItem>
-                    <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
-                    <MenuItem value="CLOSED">Closed</MenuItem>
-                </Select>
-            </FormControl>
-            <TextField
-                label="Name Filter"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={nameFilter}
-                onChange={(e) => setNameFilter(e.target.value)}
-            />
-            <Paper elevation={3} style={{ marginBottom: '20px' }} className="bug-list">
-                <List>
-                    {filteredBugs.map(bug => (
-                        <ListItem
-                            button
-                            key={bug.id}
-                            onClick={() => handleBugClick(bug)}
-                            className={`bug-list-item ${bug.status.toLowerCase().replace(' ', '-')}`}
-                        >
-                            <ListItemText
-                                primary={bug.name}
-                                secondary={
-                                    <>
-                                        <span className={`bug-status ${bug.status.toLowerCase().replace(' ', '-')}`}>
-                                            {bug.status}
-                                        </span>
-                                        <span className="bug-developer">
-                                            {bug.developer?.appUser?.username}
-                                        </span>
-                                    </>
-                                }
-                            />
-                        </ListItem>
-                    ))}
-                </List>
-            </Paper>
+            <Tabs value={tabIndex} onChange={handleTabChange}>
+                <Tab label="All Bugs" />
+                <Tab label="My Bugs" />
+            </Tabs>
+            <Box hidden={tabIndex !== 0}>
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Status Filter</InputLabel>
+                    <Select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        label="Status Filter"
+                    >
+                        <MenuItem value="">All</MenuItem>
+                        <MenuItem value="OPEN">Open</MenuItem>
+                        <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+                        <MenuItem value="CLOSED">Closed</MenuItem>
+                    </Select>
+                </FormControl>
+                <TextField
+                    label="Name Filter"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={nameFilter}
+                    onChange={(e) => setNameFilter(e.target.value)}
+                />
+                <Paper elevation={3} style={{ marginBottom: '20px' }} className="bug-list">
+                    <List>
+                        {filteredBugs.map(bug => (
+                            <ListItem
+                                button
+                                key={bug.id}
+                                onClick={() => handleBugClick(bug)}
+                                className={`bug-list-item ${bug.status.toLowerCase().replace(' ', '-')}`}
+                            >
+                                <ListItemText
+                                    primary={bug.name}
+                                    secondary={
+                                        <>
+                                            <span className={`bug-status ${bug.status.toLowerCase().replace(' ', '-')}`}>
+                                                {bug.status}
+                                            </span>
+                                            <span className="bug-developer">
+                                                {bug.developer?.appUser?.username}
+                                            </span>
+                                        </>
+                                    }
+                                />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Paper>
+            </Box>
+            <Box hidden={tabIndex !== 1}>
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Status Filter</InputLabel>
+                    <Select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        label="Status Filter"
+                    >
+                        <MenuItem value="">All</MenuItem>
+                        <MenuItem value="OPEN">Open</MenuItem>
+                        <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+                        <MenuItem value="CLOSED">Closed</MenuItem>
+                    </Select>
+                </FormControl>
+                <TextField
+                    label="Name Filter"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={nameFilter}
+                    onChange={(e) => setNameFilter(e.target.value)}
+                />
+                <Paper elevation={3} style={{ marginBottom: '20px' }} className="bug-list">
+                    <List>
+                        {filteredBugs.map(bug => (
+                            <ListItem
+                                button
+                                key={bug.id}
+                                onClick={() => handleBugClick(bug)}
+                                className={`bug-list-item ${bug.status.toLowerCase().replace(' ', '-')}`}
+                            >
+                                <ListItemText
+                                    primary={bug.name}
+                                    secondary={
+                                        <>
+                                            <span className={`bug-status ${bug.status.toLowerCase().replace(' ', '-')}`}>
+                                                {bug.status}
+                                            </span>
+                                            <span className="bug-developer">
+                                                {bug.developer?.appUser?.username}
+                                            </span>
+                                        </>
+                                    }
+                                />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Paper>
+            </Box>
             <Button variant="contained" color="primary" onClick={handleAddBugClick}>
                 Add Bug
             </Button>

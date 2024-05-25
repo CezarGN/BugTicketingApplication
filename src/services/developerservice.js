@@ -4,7 +4,7 @@ import enviroment from "../enviroment";
 class DeveloperService {
   token = localStorage.getItem('access_token')
   developer_id = localStorage.getItem('developer_id')
-  
+
   getDeveloperProject(userId) {
     const requestOptions = {
       method: 'GET',
@@ -146,6 +146,32 @@ class DeveloperService {
         console.error("There was a problem with the fetch operation", error);
         throw error;
       });
+  }
+  getBugs(userId, projectId){
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.token}`
+      }
+    }
+    return fetch(`${enviroment.getBugsUrl}/${userId}/${projectId}`, requestOptions)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Bugs could not be found in the database')
+        }
+        return response.json();
+      })
+      .then(
+        data => {
+          return data;
+        }
+      )
+      .catch(error => {
+        console.error("There was a problem with the fetch operation", error);
+        throw error;
+      }
+      )
   }
 }
 export default DeveloperService

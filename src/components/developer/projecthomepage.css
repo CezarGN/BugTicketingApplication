@@ -1,64 +1,59 @@
 .project-container {
     padding: 20px;
-}
-
-.project-header {
+  }
+  
+  .project-header {
     margin-bottom: 20px;
-}
-
-.project-description {
+  }
+  
+  .project-description {
     margin-bottom: 20px;
-    font-size: 1.1rem;
-}
-
-.bug-list {
+  }
+  
+  .bug-list {
     margin-bottom: 20px;
-}
-
-.bug-list-item {
-    padding: 10px 20px;
-    border-bottom: 1px solid #ddd;
-}
-
-.bug-list-item:hover {
-    background-color: #f5f5f5;
-    cursor: pointer;
-}
-
-.bug-status {
-    font-weight: bold;
-    margin-right: 10px;
-}
-
-.bug-status.open {
-    color: red;
-}
-
-.bug-status.in-progress {
-    color: yellow;
-}
-
-.bug-status.closed {
-    color: green;
-}
-
-.bug-developer {
-    font-size: 1.2rem;
-    font-style: italic;
+  }
+  
+  .bug-list-item {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .bug-status {
     margin-left: 10px;
-}
-
-.chart-container {
-    margin-top: 30px;
-}
-
-.snackbar-success {
-    background-color: #4caf50; /* Green */
-    color: white;
-}
-
-.snackbar-error {
-    background-color: #f44336; /* Red */
-    color: white;
-}
-
+    font-weight: bold;
+  }
+  
+  .bug-developer {
+    margin-left: 20px;
+    font-style: italic;
+  }
+  
+  .snackbar-success {
+    background-color: green;
+  }
+  
+  .snackbar-error {
+    background-color: red;
+  }
+  
+  .chart-container {
+    margin-top: 20px;
+  }
+  
+  .filter-container {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .filter-container > * {
+    flex: 1;
+    margin-right: 10px;
+  }
+  
+  .filter-container > *:last-child {
+    margin-right: 0;
+  }
+  

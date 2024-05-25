@@ -17,6 +17,7 @@ function BugDetailsPage() {
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('success');
     const developerService = new DeveloperService();
+    const role = localStorage.getItem('user_role');
 
     useEffect(() => {
         developerService.getBugById(bugId)
@@ -124,22 +125,24 @@ function BugDetailsPage() {
                         <MenuItem value="CLOSED">Closed</MenuItem>
                     </Select>
                 </FormControl>
-                <FormControl fullWidth margin="normal">
-                    <InputLabel id="developer-select-label">Developer</InputLabel>
-                    <Select
-                        labelId="developer-select-label"
-                        id="developer-select"
-                        value={selectedDeveloper}
-                        label="Developer"
-                        onChange={handleDeveloperChange}
-                    >
-                        {developers.map((dev) => (
-                            <MenuItem key={dev.id} value={dev.id}>
-                                {dev.appUser.username}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                {role === 'senior' && (
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel id="developer-select-label">Developer</InputLabel>
+                        <Select
+                            labelId="developer-select-label"
+                            id="developer-select"
+                            value={selectedDeveloper}
+                            label="Developer"
+                            onChange={handleDeveloperChange}
+                        >
+                            {developers.map((dev) => (
+                                <MenuItem key={dev.id} value={dev.id}>
+                                    {dev.appUser.username}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                )}
                 <Button variant="contained" color="primary" onClick={handleSaveChanges}>
                     Save Changes
                 </Button>
