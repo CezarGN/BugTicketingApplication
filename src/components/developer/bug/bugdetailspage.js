@@ -9,7 +9,7 @@ function BugDetailsPage() {
     const navigate = useNavigate();
     const [bug, setBug] = useState(null);
     const [developers, setDevelopers] = useState([]);
-    const [selectedDeveloper, setSelectedDeveloper] = useState('');
+    const [selectedDeveloperId, setSelectedDeveloperId] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(true);
@@ -17,13 +17,12 @@ function BugDetailsPage() {
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('success');
     const developerService = new DeveloperService();
-    const role = localStorage.getItem('user_role');
 
     useEffect(() => {
         developerService.getBugById(bugId)
             .then(data => {
                 setBug(data);
-                setSelectedDeveloper(data.developer.id);
+                setSelectedDeveloperId(data.developer.id);
                 setSelectedStatus(data.status);
                 setDescription(data.description);
                 setLoading(false);
@@ -43,7 +42,7 @@ function BugDetailsPage() {
     }, [bugId, projectId]);
 
     const handleDeveloperChange = (event) => {
-        setSelectedDeveloper(event.target.value);
+        setSelectedDeveloperId(event.target.value);
     };
 
     const handleStatusChange = (event) => {
@@ -57,18 +56,18 @@ function BugDetailsPage() {
     const handleSaveChanges = () => {
         const updatedBug = {
             ...bug,
-            developer: selectedDeveloper,
+            developer: selectedDeveloperId ,
             status: selectedStatus,
             description: description,
         };
-        
+
         developerService.updateBug(bugId, updatedBug)
             .then(() => {
                 setAlertMessage('Bug updated successfully!');
                 setAlertSeverity('success');
                 setAlertOpen(true);
                 setTimeout(() => {
-                    navigate(`/project_home_page/${bug.developer.appUser.id}`);
+                    navigate(`/project_home_page/${projectId}`);
                 }, 2000);
             })
             .catch(error => {
@@ -87,7 +86,7 @@ function BugDetailsPage() {
     };
 
     const handleBackToProject = () => {
-        navigate(`/project_home_page/${bug.developer.appUser.id}`);
+        navigate(`/project_home_page/${projectId}`);
     };
 
     if (loading) {
@@ -125,13 +124,13 @@ function BugDetailsPage() {
                         <MenuItem value="CLOSED">Closed</MenuItem>
                     </Select>
                 </FormControl>
-                {role === 'senior' && (
+                {bug.developer && bug.developer.seniority === 'SENIOR' && (
                     <FormControl fullWidth margin="normal">
                         <InputLabel id="developer-select-label">Developer</InputLabel>
                         <Select
                             labelId="developer-select-label"
                             id="developer-select"
-                            value={selectedDeveloper}
+                            value={selectedDeveloperId}
                             label="Developer"
                             onChange={handleDeveloperChange}
                         >

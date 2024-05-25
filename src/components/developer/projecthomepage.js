@@ -62,7 +62,13 @@ function ProjectHomePage() {
     }, [tabIndex, project]);
 
     const handleBugClick = (bug) => {
-        navigate(`/bugs/${bug.id}/${project.id}`);
+        if (bug.developer && bug.developer.appUser.id === parseInt(userId)) {
+            navigate(`/bugs/${bug.id}/${project.id}`);
+        } else {
+            setAlertMessage('You are not assigned to this bug.');
+            setAlertSeverity('error');
+            setAlertOpen(true);
+        }
     };
 
     const handleAddBugClick = () => {
