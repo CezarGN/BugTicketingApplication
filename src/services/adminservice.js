@@ -2,7 +2,7 @@ import enviroment from '../enviroment';
 
 class AdminService {
 
-  getProjects() {
+  getProjects(name) {
     const token = localStorage.getItem('access_token')
     const requestOptions = {
       method: 'GET',
@@ -12,7 +12,9 @@ class AdminService {
       }
     };
 
-    return fetch(enviroment.getProjectsUrl, requestOptions)
+    const url = `${enviroment.getProjectsUrl}?name=${encodeURIComponent(name)}`
+
+    return fetch(url, requestOptions)
       .then(response => {
         if (!response.ok) {
           throw new Error('Projects could not be retrieved from the database')
@@ -132,8 +134,8 @@ class AdminService {
     }
   }
 
-  getDevelopers() {
-    const token = localStorage.getItem('access_token')
+  getDevelopers(username) {
+    const token = localStorage.getItem('access_token');
     const requestOptions = {
       method: 'GET',
       headers: {
@@ -142,23 +144,22 @@ class AdminService {
       }
     };
 
-    return fetch(enviroment.getDevelopersUrl, requestOptions)
+    const url =`${enviroment.getDevelopersUrl}?username=${encodeURIComponent(username)}`
+
+    return fetch(url, requestOptions)
       .then(response => {
         if (!response.ok) {
-          throw new Error('Developers could not be retrieved from the database')
+          throw new Error('Developers could not be retrieved from the database');
         }
         return response.json();
       })
-      .then(
-        data => {
-          return data;
-        }
-      )
+      .then(data => {
+        return data;
+      })
       .catch(error => {
         console.error("There was a problem with the fetch operation", error);
         throw error;
-      }
-      )
+      });
   }
 
   getIdleDevelopers() {

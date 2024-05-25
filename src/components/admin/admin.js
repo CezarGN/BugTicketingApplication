@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Button, Tabs, Tab, Box, Snackbar, Alert } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Button, Tabs, Tab, Box, Snackbar, Alert, TextField } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
 import AdminService from '../../services/adminservice';
 import AddProjectForm from './addproject/addproject';
@@ -17,30 +17,32 @@ function Admin() {
   const [currentTab, setCurrentTab] = useState(0);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [projectFilter, setProjectFilter] = useState('');
+  const [developerFilter, setDeveloperFilter] = useState('');
   const adminService = new AdminService();
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const data = await adminService.getProjects();
-        setProjects(data);
-      } catch (error) {
-        setErrorMessage('Error fetching projects');
-      }
-    };
-
-    const fetchDevelopers = async () => {
-      try {
-        const data = await adminService.getDevelopers();
-        setDevelopers(data);
-      } catch (error) {
-        setErrorMessage('Error fetching developers');
-      }
-    };
-
     fetchProjects();
     fetchDevelopers();
   }, [showAddProjectForm, showAddUserForm]);
+
+  const fetchProjects = async (filter = '') => {
+    try {
+      const data = await adminService.getProjects(filter);
+      setProjects(data);
+    } catch (error) {
+      setErrorMessage('Error fetching projects');
+    }
+  };
+
+  const fetchDevelopers = async (filter = '') => {
+    try {
+      const data = await adminService.getDevelopers(filter);
+      setDevelopers(data);
+    } catch (error) {
+      setErrorMessage('Error fetching developers');
+    }
+  };
 
   const handleAddUserClick = () => {
     setShowAddUserForm(true);
@@ -130,6 +132,16 @@ function Admin() {
     setCurrentTab(newValue);
   };
 
+  const handleProjectFilterChange = (event) => {
+    setProjectFilter(event.target.value);
+    fetchProjects(event.target.value);
+  };
+
+  const handleDeveloperFilterChange = (event) => {
+    setDeveloperFilter(event.target.value);
+    fetchDevelopers(event.target.value);
+  };
+
   return (
     <div className="admin-container">
       <h1>Admin Dashboard</h1>
@@ -138,6 +150,14 @@ function Admin() {
         <Tab label="Developers" />
       </Tabs>
       <Box hidden={currentTab !== 0}>
+        <TextField
+          label="Filter by Project Name"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={projectFilter}
+          onChange={handleProjectFilterChange}
+        />
         <Paper>
           <Table className="admin-table">
             <TableHead>
@@ -174,6 +194,14 @@ function Admin() {
         </div>
       </Box>
       <Box hidden={currentTab !== 1}>
+        <TextField
+          label="Filter by Username"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={developerFilter}
+          onChange={handleDeveloperFilterChange}
+        />
         <Paper>
           <Table className="admin-table">
             <TableHead>
