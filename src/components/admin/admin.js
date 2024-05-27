@@ -73,10 +73,11 @@ function Admin() {
     setEditProjectData(null);
   };
 
-  const handleEditProject = (projectId) => {
+  const handleEditProject = async (projectId) => {
     const projectToEdit = projects.find(project => project.id === projectId);
     if (projectToEdit) {
       setEditProjectData(projectToEdit);
+      await fetchDevelopers();
       setShowAddProjectForm(true);
       setShowAddUserForm(false);
     } else {

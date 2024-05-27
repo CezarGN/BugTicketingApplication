@@ -28,7 +28,12 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
 
   const fetchDevelopers = async () => {
     try {
-      const developersData = await adminService.getDevelopers();
+      let developersData;
+      if (initialProjectData) {
+        developersData = await adminService.getDevelopers("");
+      } else {
+        developersData = await adminService.getIdleDevelopers();
+      }
       setDevelopers(developersData);
     } catch (error) {
       console.error('Failed to fetch developers:', error);
