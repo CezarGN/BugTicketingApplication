@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Button, Tabs, Tab, Box, Snackbar, Alert, TextField } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Button, Tabs, Tab, Box, Snackbar, Alert, TextField, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
 import AdminService from '../../services/adminservice';
 import AddProjectForm from './addproject/addproject';
@@ -19,6 +19,7 @@ function Admin() {
   const [errorMessage, setErrorMessage] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
   const [developerFilter, setDeveloperFilter] = useState('');
+  const [seniorityFilter, setSeniorityFilter] = useState('');
   const adminService = new AdminService();
 
   useEffect(() => {
@@ -35,9 +36,9 @@ function Admin() {
     }
   };
 
-  const fetchDevelopers = async (filter = '') => {
+  const fetchDevelopers = async (usernameFilter = '', seniorityFilter = '') => {
     try {
-      const data = await adminService.getDevelopers(filter);
+      const data = await adminService.getDevelopers(usernameFilter, seniorityFilter);
       setDevelopers(data);
     } catch (error) {
       setErrorMessage('Error fetching developers');
@@ -140,7 +141,12 @@ function Admin() {
 
   const handleDeveloperFilterChange = (event) => {
     setDeveloperFilter(event.target.value);
-    fetchDevelopers(event.target.value);
+    fetchDevelopers(event.target.value, seniorityFilter);
+  };
+
+  const handleSeniorityFilterChange = (event) => {
+    setSeniorityFilter(event.target.value);
+    fetchDevelopers(developerFilter, event.target.value);
   };
 
   return (
@@ -203,6 +209,19 @@ function Admin() {
           value={developerFilter}
           onChange={handleDeveloperFilterChange}
         />
+        <FormControl fullWidth variant="outlined" margin="normal">
+          <InputLabel>Filter by Seniority</InputLabel>
+          <Select
+            value={seniorityFilter}
+            onChange={handleSeniorityFilterChange}
+            label="Filter by Seniority"
+          >
+            <MenuItem value=""><em>None</em></MenuItem>
+            <MenuItem value="Junior">Junior</MenuItem>
+            <MenuItem value="Mid">Mid</MenuItem>
+            <MenuItem value="Senior">Senior</MenuItem>
+          </Select>
+        </FormControl>
         <Paper>
           <Table className="admin-table">
             <TableHead>
