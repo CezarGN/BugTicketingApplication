@@ -2,7 +2,7 @@ import enviroment from '../enviroment';
 
 class AdminService {
 
-  getProjects(name) {
+  getProjects(name, page, size) {
     const token = localStorage.getItem('access_token')
     const requestOptions = {
       method: 'GET',
@@ -12,8 +12,7 @@ class AdminService {
       }
     };
 
-    const url = `${enviroment.getProjectsUrl}?name=${encodeURIComponent(name)}`
-
+    const url = `${enviroment.getProjectsUrl}?name=${encodeURIComponent(name)}&page=${page}&size=${size}`
     return fetch(url, requestOptions)
       .then(response => {
         if (!response.ok) {
@@ -134,38 +133,35 @@ class AdminService {
     }
   }
 
-  getDevelopers(username, seniority) {
+  getDevelopers(username, seniority, page, size) {
     const token = localStorage.getItem('access_token');
     const requestOptions = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
     };
-
-    const seniorityUpper = seniority ? seniority.toUpperCase() : '';
-
-    const url = `${enviroment.getDevelopersUrl}?username=${encodeURIComponent(username)}&seniority=${encodeURIComponent(seniorityUpper)}`;
-
+    const upperCaseSeniority = seniority ? seniority.toUpperCase() : "";
+    const url = `${enviroment.getDevelopersUrl}?username=${encodeURIComponent(username)}&seniority=${encodeURIComponent(upperCaseSeniority)}&page=${page}&size=${size}`;
     return fetch(url, requestOptions)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Developers could not be retrieved from the database');
-            }
-            return response.json();
-        })
-        .then(data => {
-            return data;
-        })
-        .catch(error => {
-            console.error("There was a problem with the fetch operation", error);
-            throw error;
-        });
-  }
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Developers could not be retrieved from the database');
+        }
+        return response.json();
+      })
+      .then(data => {
+        return data;
+      })
+      .catch(error => {
+        console.error("There was a problem with the fetch operation", error);
+        throw error;
+      });
+}
   
 
-  getIdleDevelopers() {
+  getIdleDevelopers(page, size) {
     const token = localStorage.getItem('access_token')
     const requestOptions = {
       method: 'GET',
@@ -175,7 +171,35 @@ class AdminService {
       }
     };
 
-    return fetch(enviroment.getIdleDevelopersUrl, requestOptions)
+    return fetch(`${enviroment.getIdleDevelopersUrl}?page=${page}&size=${size}`, requestOptions)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Developers could not be retrieved from the database')
+        }
+        return response.json();
+      })
+      .then(
+        data => {
+          return data;
+        }
+      )
+      .catch(error => {
+        console.error("There was a problem with the fetch operation", error);
+        throw error;
+      }
+      )
+  }
+
+  getDevelopersOnProjectAndIdle(page, size, projectId) {
+    const token = localStorage.getItem('access_token')
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    };
+    return fetch(`${enviroment.getDevelopersOnProjectAndIdleUrl}/${projectId}?page=${page}&size=${size}`, requestOptions)
       .then(response => {
         if (!response.ok) {
           throw new Error('Developers could not be retrieved from the database')

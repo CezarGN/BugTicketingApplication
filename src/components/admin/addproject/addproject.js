@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Paper, Checkbox, ListItemText, Snackbar, Alert } from '@mui/material';
+import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Paper, Checkbox, ListItemText, Snackbar, Alert, CircularProgress, Box } from '@mui/material';
 import './addproject.css';
 import AdminService from '../../../services/adminservice';
 
@@ -12,9 +12,13 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
   const [isFormValid, setIsFormValid] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [developerPage, setDeveloperPage] = useState(0);
+  const [developerPageSize, setDeveloperPageSize] = useState(5);
+  const [totalDevelopers, setTotalDevelopers] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchDevelopers();
+    fetchDevelopers(developerPage, developerPageSize);
     if (initialProjectData) {
       setName(initialProjectData.name);
       setDescription(initialProjectData.description);
@@ -23,20 +27,28 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
   }, [initialProjectData]);
 
   useEffect(() => {
+    fetchDevelopers(developerPage, developerPageSize);
+  }, [developerPage, developerPageSize]);
+
+  useEffect(() => {
     checkFormValidity();
   }, [name, description, selectedDevelopers]);
 
-  const fetchDevelopers = async () => {
+  const fetchDevelopers = async (page, size) => {
+    setLoading(true);
     try {
       let developersData;
       if (initialProjectData) {
-        developersData = await adminService.getDevelopers("");
+        developersData = await adminService.getDevelopersOnProjectAndIdle(page, size, initialProjectData.id);
       } else {
-        developersData = await adminService.getIdleDevelopers();
+        developersData = await adminService.getIdleDevelopers(page, size);
       }
-      setDevelopers(developersData);
+      setDevelopers(developersData.content);
+      setTotalDevelopers(developersData.totalElements);
     } catch (error) {
       console.error('Failed to fetch developers:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,15 +64,17 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
     const selectedIds = event.target.value;
     const selectedDevBodies = developers
       .filter(dev => selectedIds.includes(dev.id))
-      .map(dev => {
-        return {
-          id: dev.id,
-          appUser: dev.appUser,
-          seniority: dev.seniority
-        };
-      });
+      .map(dev => ({
+        id: dev.id,
+        appUser: dev.appUser,
+        seniority: dev.seniority
+      }));
 
     setSelectedDevelopers(selectedDevBodies);
+  };
+
+  const handleDeveloperPageChange = (newPage) => {
+    setDeveloperPage(newPage);
   };
 
   const checkFormValidity = () => {
@@ -70,7 +84,7 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
 
   const handleSaveProject = async () => {
     try {
-      if (initialProjectData == null) {
+      if (!initialProjectData) {
         await adminService.createProject(name, description, selectedDevelopers);
         onSave({ name, description, developers: selectedDevelopers });
         setSuccessMessage('Project created successfully');
@@ -147,6 +161,25 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
               <ListItemText primary={developer.appUser.username} />
             </MenuItem>
           ))}
+          {loading && (
+            <Box display="flex" justifyContent="center" alignItems="center" p={2}>
+              <CircularProgress size={24} />
+            </Box>
+          )}
+          <MenuItem disabled>
+            <Button
+              onClick={() => handleDeveloperPageChange(developerPage - 1)}
+              disabled={developerPage === 0}
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={() => handleDeveloperPageChange(developerPage + 1)}
+              disabled={(developerPage + 1) * developerPageSize >= totalDevelopers}
+            >
+              Next
+            </Button>
+          </MenuItem>
         </Select>
       </FormControl>
       <div className="add-project-form-buttons">

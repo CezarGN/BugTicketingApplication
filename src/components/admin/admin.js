@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Button, Tabs, Tab, Box, Snackbar, Alert, TextField, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Button, Tabs, Tab, Box, Snackbar, Alert, TextField, Select, MenuItem, InputLabel, FormControl, TablePagination } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
 import AdminService from '../../services/adminservice';
 import AddProjectForm from './addproject/addproject';
@@ -20,17 +20,24 @@ function Admin() {
   const [projectFilter, setProjectFilter] = useState('');
   const [developerFilter, setDeveloperFilter] = useState('');
   const [seniorityFilter, setSeniorityFilter] = useState('');
+  const [projectPage, setProjectPage] = useState(0);
+  const [projectPageSize, setProjectPageSize] = useState(3);
+  const [developerPage, setDeveloperPage] = useState(0);
+  const [developerPageSize, setDeveloperPageSize] = useState(5);
+  const [totalProjects, setTotalProjects] = useState(0);
+  const [totalDevelopers, setTotalDevelopers] = useState(0);
   const adminService = new AdminService();
 
   useEffect(() => {
     fetchProjects();
     fetchDevelopers();
-  }, [showAddProjectForm, showAddUserForm]);
+  }, [showAddProjectForm, showAddUserForm, projectPage, projectPageSize, developerPage, developerPageSize]);
 
   const fetchProjects = async (filter = '') => {
     try {
-      const data = await adminService.getProjects(filter);
-      setProjects(data);
+      const data = await adminService.getProjects(filter, projectPage, projectPageSize);
+      setProjects(data.content);
+      setTotalProjects(data.totalElements);
     } catch (error) {
       setErrorMessage('Error fetching projects');
     }
@@ -38,8 +45,9 @@ function Admin() {
 
   const fetchDevelopers = async (usernameFilter = '', seniorityFilter = '') => {
     try {
-      const data = await adminService.getDevelopers(usernameFilter, seniorityFilter);
-      setDevelopers(data);
+      const data = await adminService.getDevelopers(usernameFilter, seniorityFilter, developerPage, developerPageSize);
+      setDevelopers(data.content);
+      setTotalDevelopers(data.totalElements);
     } catch (error) {
       setErrorMessage('Error fetching developers');
     }
@@ -132,6 +140,8 @@ function Admin() {
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
+    setShowAddProjectForm(false);
+    setShowAddUserForm(false);
   };
 
   const handleProjectFilterChange = (event) => {
@@ -147,6 +157,24 @@ function Admin() {
   const handleSeniorityFilterChange = (event) => {
     setSeniorityFilter(event.target.value);
     fetchDevelopers(developerFilter, event.target.value);
+  };
+
+  const handleProjectPageChange = (event, newPage) => {
+    setProjectPage(newPage);
+  };
+
+  const handleProjectPageSizeChange = (event) => {
+    setProjectPageSize(parseInt(event.target.value, 10));
+    setProjectPage(0);
+  };
+
+  const handleDeveloperPageChange = (event, newPage) => {
+    setDeveloperPage(newPage);
+  };
+
+  const handleDeveloperPageSizeChange = (event) => {
+    setDeveloperPageSize(parseInt(event.target.value, 10));
+    setDeveloperPage(0);
   };
 
   return (
@@ -175,7 +203,7 @@ function Admin() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {projects.map(project => (
+              {projects.map((project) => (
                 <TableRow key={project.id}>
                   <TableCell>
                     <Link to={`/project/${project.id}`}>{project.name}</Link>
@@ -193,6 +221,15 @@ function Admin() {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            component="div"
+            count={totalProjects}
+            page={projectPage}
+            onPageChange={handleProjectPageChange}
+            rowsPerPage={projectPageSize}
+            onRowsPerPageChange={handleProjectPageSizeChange}
+            rowsPerPageOptions={[3]}
+          />
         </Paper>
         <div className="admin-buttons">
           <Button variant="contained" startIcon={<Add />} onClick={handleAddProjectClick}>
@@ -232,7 +269,7 @@ function Admin() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {developers.map(developer => (
+              {developers.map((developer) => (
                 <TableRow key={developer.id}>
                   <TableCell>{developer.appUser?.username}</TableCell>
                   <TableCell>{developer.seniority}</TableCell>
@@ -248,6 +285,15 @@ function Admin() {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            component="div"
+            count={totalDevelopers}
+            page={developerPage}
+            onPageChange={handleDeveloperPageChange}
+            rowsPerPage={developerPageSize}
+            onRowsPerPageChange={handleDeveloperPageSizeChange}
+            rowsPerPageOptions={[5]}
+          />
         </Paper>
         <div className="admin-buttons">
           <Button variant="contained" startIcon={<Add />} onClick={handleAddUserClick}>

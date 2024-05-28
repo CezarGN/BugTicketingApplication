@@ -20,6 +20,7 @@ const getBugByIdUrl = developerBugUrl + "/get_bug"
 const getDevelopersOnProjectUrl = developerProjectUrl + "/get_developers_on_project"
 const updateBugUrl = developerBugUrl + "/update_bug"
 const getBugsUrl = developerBugUrl + "/get_bugs"
+const getDevelopersOnProjectAndIdleUrl = adminDeveloperUrl + "/get_developers_on_project_and_idle"
 
 const enviroment = {
     apiUrl: apiUrl,
@@ -39,7 +40,8 @@ const enviroment = {
     getBugByIdUrl : getBugByIdUrl,
     getDevelopersOnProjectUrl : getDevelopersOnProjectUrl,
     updateBugUrl : updateBugUrl,
-    getBugsUrl : getBugsUrl
+    getBugsUrl : getBugsUrl,
+    getDevelopersOnProjectAndIdleUrl : getDevelopersOnProjectAndIdleUrl
 }
 
 export default enviroment
