@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DeveloperService from '../../services/developerservice';
-import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, MenuItem, Select, FormControl, InputLabel, Tabs, Tab, Box } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, MenuItem, Select, FormControl, InputLabel, Tabs, Tab, Box, TablePagination } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './projecthomepage.css';
 
@@ -20,46 +20,41 @@ function ProjectHomePage() {
     const [statusFilter, setStatusFilter] = useState('');
     const [nameFilter, setNameFilter] = useState('');
     const [tabIndex, setTabIndex] = useState(0);
+    const [page, setPage] = useState(0);
+    const [pageSize, setPageSize] = useState(5);
+    const [totalBugs, setTotalBugs] = useState(0);
     const developerService = new DeveloperService();
 
     useEffect(() => {
         developerService.getDeveloperProject(userId)
             .then(data => {
                 setProject(data);
-                fetchBugs(data.id);
+                fetchBugs(data.id, page, pageSize);
                 setLoading(false);
             })
             .catch(error => {
                 console.error('Failed to fetch project and bugs:', error);
                 setLoading(false);
             });
-    }, [userId]);
+    }, [userId, page, pageSize]);
 
-    const fetchBugs = (projectId) => {
-        if (tabIndex === 1) {
-            developerService.getBugs(userId, projectId)
-                .then(data => {
-                    setBugs(data);
-                })
-                .catch(error => {
-                    console.error('Failed to fetch assigned bugs:', error);
-                });
-        } else {
-            developerService.getBugs(0, projectId)
-                .then(data => {
-                    setBugs(data);
-                })
-                .catch(error => {
-                    console.error('Failed to fetch all project bugs:', error);
-                });
-        }
+    const fetchBugs = (projectId, page, pageSize) => {
+        const fetchFunction = tabIndex === 1 ? developerService.getBugs(userId, projectId, page, pageSize) : developerService.getBugs(0, projectId, page, pageSize);
+        fetchFunction
+            .then(data => {
+                setBugs(data.content);
+                setTotalBugs(data.totalElements);
+            })
+            .catch(error => {
+                console.error('Failed to fetch bugs:', error);
+            });
     };
 
     useEffect(() => {
         if (project) {
-            fetchBugs(project.id);
+            fetchBugs(project.id, page, pageSize);
         }
-    }, [tabIndex, project]);
+    }, [tabIndex, project, page, pageSize]);
 
     const handleBugClick = (bug) => {
         if (bug.developer && bug.developer.appUser.id === parseInt(userId)) {
@@ -106,6 +101,15 @@ function ProjectHomePage() {
 
     const handleTabChange = (event, newValue) => {
         setTabIndex(newValue);
+    };
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangePageSize = (event) => {
+        setPageSize(parseInt(event.target.value, 10));
+        setPage(0);
     };
 
     if (loading) {
@@ -182,6 +186,14 @@ function ProjectHomePage() {
                             </ListItem>
                         ))}
                     </List>
+                    <TablePagination
+                        component="div"
+                        count={totalBugs} // Use the actual total bug count from the response
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={pageSize}
+                        onRowsPerPageChange={handleChangePageSize}
+                    />
                 </Paper>
             </Box>
             <Box hidden={tabIndex !== 1}>
@@ -231,6 +243,14 @@ function ProjectHomePage() {
                             </ListItem>
                         ))}
                     </List>
+                    <TablePagination
+                        component="div"
+                        count={totalBugs} // Use the actual total bug count from the response
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={pageSize}
+                        onRowsPerPageChange={handleChangePageSize}
+                    />
                 </Paper>
             </Box>
             <Button variant="contained" color="primary" onClick={handleAddBugClick}>

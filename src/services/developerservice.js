@@ -13,7 +13,7 @@ class DeveloperService {
         'Authorization': `Bearer ${this.token}`
       }
     };
-    console.log(`${enviroment.getDeveloperProjectUrl}/${userId}`)
+
     return fetch(`${enviroment.getDeveloperProjectUrl}/${userId}`, requestOptions)
       .then(response => {
         if (!response.ok) {
@@ -147,7 +147,7 @@ class DeveloperService {
         throw error;
       });
   }
-  getBugs(userId, projectId){
+  getBugs(userId, projectId, page, size){
     const requestOptions = {
       method: 'GET',
       headers: {
@@ -155,7 +155,7 @@ class DeveloperService {
         'Authorization': `Bearer ${this.token}`
       }
     }
-    return fetch(`${enviroment.getBugsUrl}/${userId}/${projectId}`, requestOptions)
+    return fetch(`${enviroment.getBugsUrl}/${userId}/${projectId}?page=${page}&size=${size}`, requestOptions)
       .then(response => {
         if (!response.ok) {
           throw new Error('Bugs could not be found in the database')
