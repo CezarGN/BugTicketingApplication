@@ -195,8 +195,8 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
           required
           className="add-project-form-select"
         >
-          <MenuItem value="com.pyxis.greenhopper.jira:basic-software-development">Basic Software Development</MenuItem>
-          <MenuItem value="com.pyxis.greenhopper.jira:gh-simplified-agility-scrum">Simplified Agility Scrum</MenuItem>
+          <MenuItem value="com.pyxis.greenhopper.jira:basic-software-development-template">Basic Software Development</MenuItem>
+          <MenuItem value="com.pyxis.greenhopper.jira:gh-simplified-agility-scrum-template">Simplified Agility Scrum</MenuItem>
         </Select>
       </FormControl>
       <div className="add-project-form-buttons">
