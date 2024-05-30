@@ -218,13 +218,14 @@ class AdminService {
       )
   }
 
-  createProject(name, description, developers) {
+  createProject(name, description, developers, projectTemplateKey) {
 
     const token = localStorage.getItem('access_token');
     const requestBody = {
       name: name,
       description: description,
-      developers: developers
+      developers: developers,
+      projectTemplateKey: projectTemplateKey
     }
     const requestOptions = {
       method: 'POST',

@@ -15,6 +15,7 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
   const [developerPage, setDeveloperPage] = useState(0);
   const [developerPageSize, setDeveloperPageSize] = useState(5);
   const [totalDevelopers, setTotalDevelopers] = useState(0);
+  const [projectTemplateKey, setProjectTemplateKey] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -77,6 +78,10 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
     setDeveloperPage(newPage);
   };
 
+  const handleProjectTemplateChange = (event) => {
+    setProjectTemplateKey(event.target.value);
+  };
+
   const checkFormValidity = () => {
     const isValid = name.trim() !== '' && description.trim() !== '' && selectedDevelopers.length > 0;
     setIsFormValid(isValid);
@@ -85,7 +90,7 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
   const handleSaveProject = async () => {
     try {
       if (!initialProjectData) {
-        await adminService.createProject(name, description, selectedDevelopers);
+        await adminService.createProject(name, description, selectedDevelopers, projectTemplateKey);
         onSave({ name, description, developers: selectedDevelopers });
         setSuccessMessage('Project created successfully');
       } else {
@@ -180,6 +185,18 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
               Next
             </Button>
           </MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl className="add-project-form-field">
+        <InputLabel>Project Template</InputLabel>
+        <Select
+          value={projectTemplateKey}
+          onChange={handleProjectTemplateChange}
+          required
+          className="add-project-form-select"
+        >
+          <MenuItem value="com.pyxis.greenhopper.jira:basic-software-development">Basic Software Development</MenuItem>
+          <MenuItem value="com.pyxis.greenhopper.jira:gh-simplified-agility-scrum">Simplified Agility Scrum</MenuItem>
         </Select>
       </FormControl>
       <div className="add-project-form-buttons">
