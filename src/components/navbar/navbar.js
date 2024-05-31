@@ -3,15 +3,17 @@ import { AppBar, Toolbar, Typography, Button, Dialog, DialogActions, DialogConte
 import { useNavigate } from 'react-router-dom';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import './navbar.css';
+import TokenService from '../../services/auth/tokenservice';
 
 function NavBar() {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
+    const tokenService = new TokenService();
 
     const handleLogout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('developer_id')
-        localStorage.removeItem('user_role')
+        tokenService.removeAccessToken();
+        tokenService.removeUserId();
+        tokenService.removeUserRole();
         handleClose(); 
         navigate('/login');
         window.dispatchEvent(new Event('storage'));

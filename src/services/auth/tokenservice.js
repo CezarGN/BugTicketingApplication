@@ -36,5 +36,17 @@ class TokenService {
             return true;
         }
     }
+
+    removeAccessToken() {
+        localStorage.removeItem('access_token');
+    }
+
+    removeUserId() {
+        localStorage.removeItem('user_id');
+    }
+
+    removeUserRole() {
+        localStorage.removeUserRole('user_role');
+    }
 }
 export default TokenService
