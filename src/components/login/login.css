@@ -48,9 +48,9 @@
 
   .custom-alert {
     position: absolute;
-    bottom: 450px; /* Position alert just below the login form */
+    bottom: 450px; 
     left: 50%;
-    transform: translateX(-50%); /* Center alert horizontally */
-    width: 80%; /* Make alert 80% wide */
-    max-width: 270px; /* Limit the maximum width of the alert */
+    transform: translateX(-50%); 
+    width: 80%;
+    max-width: 270px;
 }

@@ -38,6 +38,18 @@ function App() {
     }
   }, [tokenService, navigate]);
 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      tokenService.removeAccessToken();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [tokenService]);
+
   const onLogin = () => {
     setIsAuthenticated(true);
   };
