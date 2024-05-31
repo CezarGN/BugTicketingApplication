@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import DeveloperService from '../../services/developerservice';
+import DeveloperBugService from '../../services/developer/developerbugservice';
 import { List, ListItem, ListItemText, Typography, CircularProgress, Container, Paper, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, MenuItem, Select, FormControl, InputLabel, Tabs, Tab, Box, TablePagination } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './projecthomepage.css';
+import DeveloperProjectService from '../../services/developer/developerprojectservice';
 
 function ProjectHomePage() {
     const { userId } = useParams();
@@ -23,10 +24,11 @@ function ProjectHomePage() {
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(5);
     const [totalBugs, setTotalBugs] = useState(0);
-    const developerService = new DeveloperService();
+    const developerBugService = new DeveloperBugService();
+    const developerProjectService = new DeveloperProjectService();
 
     useEffect(() => {
-        developerService.getDeveloperProject(userId)
+        developerProjectService.getDeveloperProject(userId)
             .then(data => {
                 setProject(data);
                 fetchBugs(data.id, page, pageSize);
@@ -39,7 +41,7 @@ function ProjectHomePage() {
     }, [userId, page, pageSize]);
 
     const fetchBugs = (projectId, page, pageSize) => {
-        const fetchFunction = tabIndex === 1 ? developerService.getBugs(userId, projectId, page, pageSize) : developerService.getBugs(0, projectId, page, pageSize);
+        const fetchFunction = tabIndex === 1 ? developerBugService.getBugs(userId, projectId, page, pageSize) : developerBugService.getBugs(0, projectId, page, pageSize);
         fetchFunction
             .then(data => {
                 setBugs(data.content);
@@ -83,7 +85,7 @@ function ProjectHomePage() {
 
     const handleSaveBug = () => {
         const projectId = project.id;
-        developerService.addBug(projectId, bugName, bugDescription)
+        developerBugService.createBug(projectId, bugName, bugDescription)
             .then((newBug) => {
                 setBugs([...bugs, newBug]);
                 setOpen(false);

@@ -15,7 +15,7 @@ const getIdleDevelopersUrl = adminDeveloperUrl + "/get_idle_developers"
 const updateDeveloperUrl = adminDeveloperUrl + "/update_developer"
 const deleteDeveloperUrl = adminDeveloperUrl + "/delete_developer"
 const getDeveloperProjectUrl = developerProjectUrl + "/get_developer_project"
-const addBugUrl = developerBugUrl + "/add_bug"
+const createBugUrl = developerBugUrl + "/create_bug"
 const getBugByIdUrl = developerBugUrl + "/get_bug"
 const getDevelopersOnProjectUrl = developerProjectUrl + "/get_developers_on_project"
 const updateBugUrl = developerBugUrl + "/update_bug"
@@ -36,7 +36,7 @@ const enviroment = {
     updateDeveloperUrl : updateDeveloperUrl,
     deleteDeveloperUrl : deleteDeveloperUrl,
     getDeveloperProjectUrl : getDeveloperProjectUrl,
-    addBugUrl : addBugUrl,
+    createBugUrl : createBugUrl,
     getBugByIdUrl : getBugByIdUrl,
     getDevelopersOnProjectUrl : getDevelopersOnProjectUrl,
     updateBugUrl : updateBugUrl,

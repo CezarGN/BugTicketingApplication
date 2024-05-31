@@ -1,7 +1,11 @@
-import enviroment from '../enviroment';
+import enviroment from '../../enviroment';
 import Cookies from 'universal-cookie';
+import TokenService from './tokenservice';
+import { Toll } from '@mui/icons-material';
 
 class AuthService {
+
+  tokenService = new TokenService();
 
   login(username, password) {
 
@@ -26,9 +30,9 @@ class AuthService {
       .then(
         data => {
           console.log(data.id);
-          localStorage.setItem("access_token", data.token)
-          localStorage.setItem("developer_id", data.id)
-          localStorage.setItem("user_role", data.role)
+          this.tokenService.setAccessToken(data.token)
+          this.tokenService.setUserId(data.id)
+          this.tokenService.setUserRole(data.role)
           return data;
         }
       )

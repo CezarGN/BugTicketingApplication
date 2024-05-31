@@ -1,39 +1,10 @@
-import enviroment from '../enviroment';
+import enviroment from '../../enviroment';
+import TokenService from '../auth/tokenservice';
 
-class AdminService {
-
-  getProjects(name, page, size) {
-    const token = localStorage.getItem('access_token')
-    const requestOptions = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    };
-
-    const url = `${enviroment.getProjectsUrl}?name=${encodeURIComponent(name)}&page=${page}&size=${size}`
-    return fetch(url, requestOptions)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Projects could not be retrieved from the database')
-        }
-        return response.json();
-      })
-      .then(
-        data => {
-          return data;
-        }
-      )
-      .catch(error => {
-        console.error("There was a problem with the fetch operation", error);
-        throw error;
-      }
-      )
-  }
-
-  addUser(username, password, seniority, role) {
-    const token = localStorage.getItem('access_token')
+class AdminDeveloperService {
+  tokenService = new TokenService();
+  createUser(username, password, seniority, role) {
+    const token = this.tokenService.getAccessToken();
     const requestBody = {
       username: username,
       password: password,
@@ -48,7 +19,6 @@ class AdminService {
       },
       body: JSON.stringify(requestBody)
     };
-    console.log(JSON.stringify(requestBody));
 
     return fetch(enviroment.sign_up_Url, requestOptions)
       .then(response => {
@@ -70,7 +40,7 @@ class AdminService {
   }
 
   updateUser(userId, username, seniority, role) {
-    const token = localStorage.getItem('access_token')
+    const token = this.tokenService.getAccessToken();
     const requestBody = {
       appUser: {
         username: username,
@@ -109,7 +79,7 @@ class AdminService {
 
   async deleteUser(userId) {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = this.tokenService.getAccessToken();
       console.log(`${enviroment.deleteDeveloperUrl}/${userId}`);
 
       const requestOptions = {
@@ -134,7 +104,7 @@ class AdminService {
   }
 
   getDevelopers(username, seniority, page, size) {
-    const token = localStorage.getItem('access_token');
+    const token = this.tokenService.getAccessToken();
     const requestOptions = {
       method: 'GET',
       headers: {
@@ -158,11 +128,11 @@ class AdminService {
         console.error("There was a problem with the fetch operation", error);
         throw error;
       });
-}
-  
+  }
+
 
   getIdleDevelopers(page, size) {
-    const token = localStorage.getItem('access_token')
+    const token = this.tokenService.getAccessToken();
     const requestOptions = {
       method: 'GET',
       headers: {
@@ -191,7 +161,7 @@ class AdminService {
   }
 
   getDevelopersOnProjectAndIdle(page, size, projectId) {
-    const token = localStorage.getItem('access_token')
+    const token = this.tokenService.getAccessToken();
     const requestOptions = {
       method: 'GET',
       headers: {
@@ -217,106 +187,6 @@ class AdminService {
       }
       )
   }
-
-  createProject(name, description, developers, projectTemplateKey) {
-
-    const token = localStorage.getItem('access_token');
-    const requestBody = {
-      name: name,
-      description: description,
-      developers: developers,
-      projectTemplateKey: projectTemplateKey
-    }
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(requestBody)
-    };
-    console.log(JSON.stringify(requestBody));
-
-    return fetch(enviroment.createProjectUrl, requestOptions)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('The project could not be created')
-        }
-        return response.json();
-      })
-      .then(
-        data => {
-          return data;
-        }
-      )
-      .catch(error => {
-        console.error("There was a problem with the fetch operation", error);
-        throw error;
-      }
-      )
-  }
-
-  async deleteProject(projectId) {
-    try {
-      const token = localStorage.getItem('access_token');
-      console.log(`${enviroment.deleteProjectUrl}/${projectId}`);
-
-      const requestOptions = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      };
-
-      const response = await fetch(`${enviroment.deleteProjectUrl}/${projectId}`, {
-        method: 'DELETE',
-        headers: requestOptions
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete project');
-      }
-
-      console.log('Project deleted successfully');
-    } catch (error) {
-      console.error('Failed to delete project:', error.message);
-      throw new Error('Failed to delete project: ' + error.message);
-    }
-  }
-
-
-  updateProject(projectId, name, description, developers) {
-    const token = localStorage.getItem('access_token');
-    const requestBody = {
-      name: name,
-      description: description,
-      developers: developers
-    }
-    const requestOptions = {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(requestBody)
-    };
-
-    return fetch(`${enviroment.updateProjectUrl}/${projectId}`, requestOptions)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('The project could not be created')
-        }
-        return response.json();
-      })
-      .then(
-        data => {
-          return data;
-        }
-      )
-      .catch(error => {
-        console.error("There was a problem with the fetch operation", error);
-        throw error;
-      }
-      )
-  }
 }
 
-export default AdminService
+export default AdminDeveloperService

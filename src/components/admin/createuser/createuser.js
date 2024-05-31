@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Paper, Snackbar, Alert } from '@mui/material';
-import './adduser.css';
-import AdminService from '../../../services/adminservice';
+import './createuser.css';
+import AdminDeveloperService from '../../../services/admin/admindeveloperservice';
 
-function AddUserForm({ onSave, onClose, initialUserData }) {
-  const adminService = new AdminService();
+
+function CreateUserForm({ onSave, onClose, initialUserData }) {
+  const adminDeveloperService = new AdminDeveloperService();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [seniority, setSeniority] = useState('');
@@ -49,11 +51,11 @@ function AddUserForm({ onSave, onClose, initialUserData }) {
   const handleSaveUser = async () => {
     try {
       if (initialUserData) {
-        await adminService.updateUser(initialUserData.id, username, seniority, role);
+        await adminDeveloperService.updateUser(initialUserData.id, username, seniority, role);
         onSave({ id: initialUserData.id, username, seniority, role });
         setSuccessMessage('User updated successfully');
       } else {
-        await adminService.addUser(username, password, seniority, role);
+        await adminDeveloperService.createUser(username, password, seniority, role);
         onSave({ username, password, seniority, role });
         setSuccessMessage('User created successfully');
       }
@@ -149,4 +151,4 @@ function AddUserForm({ onSave, onClose, initialUserData }) {
   );
 }
 
-export default AddUserForm;
+export default CreateUserForm;

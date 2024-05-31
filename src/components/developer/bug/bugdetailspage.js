@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import DeveloperService from '../../../services/developerservice';
+import DeveloperBugService from '../../../services/developer/developerbugservice';
 import { CircularProgress, Container, Typography, Paper, Button, MenuItem, Select, FormControl, InputLabel, TextField, Snackbar, Alert } from '@mui/material';
 import './bugdetailspage.css';
+import DeveloperProjectService from '../../../services/developer/developerprojectservice';
 
 function BugDetailsPage() {
     const { bugId, projectId } = useParams();
@@ -16,10 +17,11 @@ function BugDetailsPage() {
     const [alertOpen, setAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('success');
-    const developerService = new DeveloperService();
+    const developerBugService = new DeveloperBugService();
+    const developerProjectService = new DeveloperProjectService();
 
     useEffect(() => {
-        developerService.getBugById(bugId)
+        developerBugService.getBugById(bugId)
             .then(data => {
                 setBug(data);
                 setSelectedDeveloperId(data.developer.id);
@@ -32,7 +34,7 @@ function BugDetailsPage() {
                 setLoading(false);
             });
 
-        developerService.getDevelopersOnProject(projectId)
+        developerProjectService.getDevelopersOnProject(projectId)
             .then(data => {
                 setDevelopers(data);
             })
@@ -61,7 +63,7 @@ function BugDetailsPage() {
             description: description,
         };
 
-        developerService.updateBug(bugId, updatedBug)
+        developerBugService.updateBug(bugId, updatedBug)
             .then(() => {
                 setAlertMessage('Bug updated successfully!');
                 setAlertSeverity('success');

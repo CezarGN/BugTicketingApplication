@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Button, Tabs, Tab, Box, Snackbar, Alert, TextField, Select, MenuItem, InputLabel, FormControl, TablePagination } from '@mui/material';
 import { Edit, Delete, Add } from '@mui/icons-material';
-import AdminService from '../../services/adminservice';
-import AddProjectForm from './addproject/addproject';
-import AddUserForm from './adduser/adduser';
+import CreateProjectForm from './createproject/createproject';
+import CreateUserForm from './createuser/createuser';
 import './admin.css';
+import AdminProjectService from '../../services/admin/adminprojectservice';
+import AdminDeveloperService from '../../services/admin/admindeveloperservice';
+import CreateProjectForm from './createproject/createproject';
 
 function Admin() {
   const [projects, setProjects] = useState([]);
@@ -26,7 +28,8 @@ function Admin() {
   const [developerPageSize, setDeveloperPageSize] = useState(5);
   const [totalProjects, setTotalProjects] = useState(0);
   const [totalDevelopers, setTotalDevelopers] = useState(0);
-  const adminService = new AdminService();
+  const adminDeveloperService = new AdminDeveloperService();
+  const adminProjectService = new AdminProjectService();
 
   useEffect(() => {
     fetchProjects();
@@ -35,7 +38,7 @@ function Admin() {
 
   const fetchProjects = async (filter = '') => {
     try {
-      const data = await adminService.getProjects(filter, projectPage, projectPageSize);
+      const data = await adminProjectService.getProjects(filter, projectPage, projectPageSize);
       setProjects(data.content);
       setTotalProjects(data.totalElements);
     } catch (error) {
@@ -45,7 +48,7 @@ function Admin() {
 
   const fetchDevelopers = async (usernameFilter = '', seniorityFilter = '') => {
     try {
-      const data = await adminService.getDevelopers(usernameFilter, seniorityFilter, developerPage, developerPageSize);
+      const data = await adminDeveloperService.getDevelopers(usernameFilter, seniorityFilter, developerPage, developerPageSize);
       setDevelopers(data.content);
       setTotalDevelopers(data.totalElements);
     } catch (error) {
@@ -114,7 +117,7 @@ function Admin() {
 
   const deleteProject = async (projectId) => {
     try {
-      await adminService.deleteProject(projectId);
+      await adminProjectService.deleteProject(projectId);
       const updatedProjects = projects.filter(project => project.id !== projectId);
       setProjects(updatedProjects);
       setSuccessMessage('Project deleted successfully');
@@ -127,7 +130,7 @@ function Admin() {
 
   const deleteUser = async (userId) => {
     try {
-      await adminService.deleteUser(userId);
+      await adminDeveloperService.deleteUser(userId);
       const updatedDevelopers = developers.filter(developer => developer.id !== userId);
       setDevelopers(updatedDevelopers);
       setSuccessMessage('User deleted successfully');
@@ -301,8 +304,8 @@ function Admin() {
           </Button>
         </div>
       </Box>
-      {showAddUserForm && <AddUserForm initialUserData={editUserData} onSave={handleSaveUser} onClose={handleCloseAddUserForm} />}
-      {showAddProjectForm && <AddProjectForm initialProjectData={editProjectData} onSave={handleSaveProject} onClose={handleCloseAddProjectForm} />}
+      {showAddUserForm && <CreateUserForm initialUserData={editUserData} onSave={handleSaveUser} onClose={handleCloseAddUserForm} />}
+      {showAddProjectForm && <CreateProjectForm initialProjectData={editProjectData} onSave={handleSaveProject} onClose={handleCloseAddProjectForm} />}
       <Snackbar
         open={!!successMessage || !!errorMessage}
         autoHideDuration={4000}
@@ -320,5 +323,4 @@ function Admin() {
     </div>
   );
 }
-
 export default Admin;

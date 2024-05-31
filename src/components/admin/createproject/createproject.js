@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Paper, Checkbox, ListItemText, Snackbar, Alert, CircularProgress, Box } from '@mui/material';
-import './addproject.css';
-import AdminService from '../../../services/adminservice';
+import './createproject.css';
+import AdminProjectService from '../../../services/admin/adminprojectservice';
+import AdminDeveloperService from '../../../services/admin/admindeveloperservice';
 
-function AddProjectForm({ onSave, onClose, initialProjectData }) {
-  const adminService = new AdminService();
+function CreateProjectForm({ onSave, onClose, initialProjectData }) {
+  const adminDeveloperService = new AdminDeveloperService();
+  const adminProjectService = new AdminProjectService();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [developers, setDevelopers] = useState([]);
@@ -40,9 +42,9 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
     try {
       let developersData;
       if (initialProjectData) {
-        developersData = await adminService.getDevelopersOnProjectAndIdle(page, size, initialProjectData.id);
+        developersData = await adminDeveloperService.getDevelopersOnProjectAndIdle(page, size, initialProjectData.id);
       } else {
-        developersData = await adminService.getIdleDevelopers(page, size);
+        developersData = await adminDeveloperService.getIdleDevelopers(page, size);
       }
       setDevelopers(developersData.content);
       setTotalDevelopers(developersData.totalElements);
@@ -90,11 +92,11 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
   const handleSaveProject = async () => {
     try {
       if (!initialProjectData) {
-        await adminService.createProject(name, description, selectedDevelopers, projectTemplateKey);
+        await adminProjectService.createProject(name, description, selectedDevelopers, projectTemplateKey);
         onSave({ name, description, developers: selectedDevelopers });
         setSuccessMessage('Project created successfully');
       } else {
-        await adminService.updateProject(initialProjectData.id, name, description, selectedDevelopers);
+        await adminProjectService.updateProject(initialProjectData.id, name, description, selectedDevelopers);
         onSave({ name, description, developers: selectedDevelopers });
         setSuccessMessage('Project updated successfully');
       }
@@ -227,4 +229,4 @@ function AddProjectForm({ onSave, onClose, initialProjectData }) {
   );
 }
 
-export default AddProjectForm;
+export default CreateProjectForm;
